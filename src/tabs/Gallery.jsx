@@ -30,6 +30,8 @@ export class Gallery extends Component {
   };
 
   render() {
+
+    // sad
     const { images } = this.state;
 
     return (

@@ -7,6 +7,8 @@ const LS_KEY = 'todos';
 export class Todos extends Component {
   state = {
     todos: [],
+    isEditing: false,
+  currentTodo: {id: 'kwz2vOch2Opj2ENA8vdxB', text: 'batman'},
   };
 
   onHandleSubmit = value => {
@@ -16,6 +18,51 @@ export class Todos extends Component {
 
   deleteTodos = (id) => {
     this.setState(prevState => ({todos: prevState.todos.filter(todo => todo.id !== id)}))
+  }
+
+  onHandleChange = (id) => {
+    const current = this.state.todos.find((todo) => id === todo.id);
+    // this.setState(prevState => {
+    //   console.log('currentTodo :>> ', prevState.currentTodo);
+  
+    //   return { currentTodo: current };
+    // });
+    // this.setState({currentTodo: current});
+    // this.setState({...this.state, currentTodo: current});
+    
+    
+    this.handleEdit(current);
+  }
+
+  handleEdit = (current) => {
+
+    this.setState({isEditing: true, currentTodo: {...this.state.currentTodo, ...current}});
+    
+
+  }
+
+  
+
+  handleCancel = () => {
+    this.setState({isEditing: false, currentTodo: {}});
+   
+  }
+
+  handleEditFormUpdate = (current, id) => {
+console.log('id :>> ', id);
+this.setState(prevState=> ({
+  todos: prevState.todos.map(todo=> {
+    if( todo.id === id) {
+      return {
+        ...todo,
+        text: current,
+        id: id
+      }
+    }
+  })
+}))
+console.log('this.state.todos :>> ', this.state.todos);
+
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -35,11 +82,11 @@ export class Todos extends Component {
   render() {
     return (
       <>
-        <SearchForm onSubmit={this.onHandleSubmit} />
+      {this.state.isEditing ? <EditForm onUpdate={this.handleEditFormUpdate} onCancel={this.handleCancel} currentTodo={this.state.currentTodo}/> : <SearchForm onSubmit={this.onHandleSubmit} />}
         <Grid>
           {this.state.todos.map((todo, index) => (
             <GridItem key={todo.id}>
-              <Todo todo={todo} index={index + 1} onDeleteClick={this.deleteTodos} />
+              <Todo todo={todo} index={index + 1} onDeleteClick={this.deleteTodos} onHandleChange={this.onHandleChange}/>
             </GridItem>
           ))}
         </Grid>
